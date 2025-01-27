@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel 2025 - Gestão de Reservas</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="bg-primary text-white text-center py-4">
+        <h1>Gestão de Reservas</h1>
+        <p class="lead">Gerencie reservas, atualize tarifas e acompanhe o status</p>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hotel 2025</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="quartos.html">Quartos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="reservas.html">Reservas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="">Relatórios</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="container my-5">
+        <section id="reservations" class="mb-5">
+            <h2>Gestão de Reservas</h2>
+            <button class="btn btn-success mb-3" onclick="addReservation()">Adicionar Reserva</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Quarto</th>
+                        <th>Data</th>
+                        <th>Tarifa</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationTable">
+                    <!-- Reservas geradas dinamicamente aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-4">
+        <p>&copy; 2025 Hotel 2025. Todos os direitos reservados.</p>
+        <p>Desenvolvido por VNF-GRUPOXX</p>
+    </footer>
+
+    <script>
+        // Simulação de dados
+        let reservations = [
+            { id: 1, room: "Quarto Luxo", date: "2025-02-01", rate: 200, status: "Confirmada" },
+            { id: 2, room: "Quarto Standard", date: "2025-02-10", rate: 150, status: "Pendente" }
+        ];
+
+        // Renderizar Reservas
+        const renderReservations = () => {
+            const reservationTable = document.getElementById('reservationTable');
+            reservationTable.innerHTML = '';
+            reservations.forEach(reservation => {
+                reservationTable.innerHTML += `
+                    <tr>
+                        <td>${reservation.id}</td>
+                        <td>${reservation.room}</td>
+                        <td>${reservation.date}</td>
+                        <td>$${reservation.rate}</td>
+                        <td>${reservation.status}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editReservation(${reservation.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteReservation(${reservation.id})">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        };
+
+        // Adicionar Reserva
+        const addReservation = () => {
+            const newReservation = {
+                id: reservations.length + 1,
+                room: prompt("Quarto:", "Novo Quarto") || "Novo Quarto",
+                date: prompt("Data (YYYY-MM-DD):", "2025-02-15") || "2025-02-15",
+                rate: parseFloat(prompt("Tarifa:", 100)) || 100,
+                status: "Confirmada"
+            };
+            reservations.push(newReservation);
+            renderReservations();
+        };
+
+        // Editar Reserva
+        const editReservation = (id) => {
+            const reservation = reservations.find(r => r.id === id);
+            reservation.room = prompt("Editar Quarto:", reservation.room) || reservation.room;
+            reservation.date = prompt("Editar Data (YYYY-MM-DD):", reservation.date) || reservation.date;
+            reservation.rate = parseFloat(prompt("Editar Tarifa:", reservation.rate)) || reservation.rate;
+            reservation.status = prompt("Editar Status:", reservation.status) || reservation.status;
+            renderReservations();
+        };
+
+        // Excluir Reserva
+        const deleteReservation = (id) => {
+            reservations = reservations.filter(r => r.id !== id);
+            renderReservations();
+        };
+
+        // Inicializar a página
+        renderReservations();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
