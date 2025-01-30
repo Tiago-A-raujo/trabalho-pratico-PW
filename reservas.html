@@ -26,10 +26,10 @@
                         <a class="nav-link" href="index.html">Início</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="quartos.html">Quartos</a>
+                        <a class="nav-link" href="quartos.html">Quartos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active " href="reservas.html">Reservas</a>
+                        <a class="nav-link active" href="reservas.html">Reservas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="">Relatórios</a>
@@ -40,7 +40,7 @@
     </nav>
     <main class="container my-5">
         <h2>Gestão de Reservas</h2>
-        <button class="btn btn-success mb-3" onclick="openModal()">Adicionar Reserva</button>
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#reservationModal">Adicionar Reserva</button>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -57,100 +57,189 @@
     </main>
 
     <!-- Modal Adicionar/Editar -->
-    <div class="modal fade" id="reservationModal">
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Adicionar Reserva</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="reservationModalLabel">Adicionar Reserva</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="reservationId">
-                    <input type="text" id="reservationRoom" class="form-control mb-2" placeholder="Nome do Quarto">
-                    <input type="date" id="reservationDate" class="form-control mb-2">
-                    <input type="number" id="reservationRate" class="form-control mb-2" placeholder="Tarifa">
-                    <select id="reservationStatus" class="form-control">
-                        <option>Confirmada</option>
-                        <option>Pendente</option>
-                    </select>
+                    <form id="reservationForm">
+                        <input type="hidden" id="reservationId">
+                        <div class="mb-3">
+                            <label for="reservationRoom" class="form-label">Quarto</label>
+                            <select class="form-select" id="reservationRoom" required>
+                                <!-- Opções de quartos serão preenchidas dinamicamente -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservationDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="reservationDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservationRate" class="form-label">Tarifa</label>
+                            <input type="number" class="form-control" id="reservationRate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservationStatus" class="form-label">Status</label>
+                            <select class="form-select" id="reservationStatus" required>
+                                <option value="Confirmada">Confirmada</option>
+                                <option value="Pendente">Pendente</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" onclick="saveReservation()">Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveReservation()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Excluir -->
+    <div class="modal fade" id="deleteReservationModal" tabindex="-1" aria-labelledby="deleteReservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteReservationModalLabel">Excluir Reserva</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza de que deseja excluir esta reserva?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Excluir</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let reservations = [
-            { id: 1, room: "Quarto Luxo", date: "2025-02-01", rate: 200, status: "Confirmada" },
-            { id: 2, room: "Quarto Standard", date: "2025-02-10", rate: 150, status: "Pendente" }
+        // Dados compartilhados entre as páginas (simulação)
+        let rooms = [
+            { id: 1, name: "Quarto Luxo", price: 200, status: "Disponível" },
+            { id: 2, name: "Quarto Standard", price: 150, status: "Disponível" }
         ];
 
+        let reservations = [
+            { id: 1, roomId: 1, date: "2025-02-01", rate: 200, status: "Confirmada" },
+            { id: 2, roomId: 2, date: "2025-02-10", rate: 150, status: "Pendente" }
+        ];
+
+        let reservationToDelete = null;  // Variável para armazenar o ID da reserva a ser excluída
+
+        // Renderizar Reservas
         const renderReservations = () => {
             const reservationTable = document.getElementById('reservationTable');
             reservationTable.innerHTML = '';
             reservations.forEach(reservation => {
+                const room = rooms.find(r => r.id === reservation.roomId);
                 reservationTable.innerHTML += `
                     <tr>
                         <td>${reservation.id}</td>
-                        <td>${reservation.room}</td>
+                        <td>${room ? room.name : "Quarto não encontrado"}</td>
                         <td>${reservation.date}</td>
                         <td>$${reservation.rate}</td>
                         <td>${reservation.status}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="openModal(${reservation.id})">Editar</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteReservation(${reservation.id})">Excluir</button>
+                            <button class="btn btn-warning btn-sm" onclick="openEditReservationModal(${reservation.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteReservationModal(${reservation.id})">Excluir</button>
                         </td>
                     </tr>
                 `;
             });
         };
 
-        const openModal = (id = null) => {
-            const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
-            document.getElementById('modalTitle').innerText = id ? "Editar Reserva" : "Adicionar Reserva";
-            
-            if (id) {
-                const reservation = reservations.find(r => r.id === id);
+        // Preencher a lista de quartos no modal
+        const populateRoomOptions = () => {
+            const roomSelect = document.getElementById('reservationRoom');
+            roomSelect.innerHTML = '';
+            rooms.forEach(room => {
+                if (room.status === "Disponível") {
+                    roomSelect.innerHTML += `<option value="${room.id}">${room.name}</option>`;
+                }
+            });
+        };
+
+        // Abrir Modal de Edição ou Adição
+        const openEditReservationModal = (id) => {
+            const reservation = reservations.find(r => r.id === id);
+            if (reservation) {
                 document.getElementById('reservationId').value = reservation.id;
-                document.getElementById('reservationRoom').value = reservation.room;
+                document.getElementById('reservationRoom').value = reservation.roomId;
                 document.getElementById('reservationDate').value = reservation.date;
                 document.getElementById('reservationRate').value = reservation.rate;
                 document.getElementById('reservationStatus').value = reservation.status;
-            } else {
-                document.getElementById('reservationId').value = '';
-                document.getElementById('reservationRoom').value = '';
-                document.getElementById('reservationDate').value = '';
-                document.getElementById('reservationRate').value = '';
-                document.getElementById('reservationStatus').value = 'Confirmada';
+                const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+                modal.show();
             }
-            modal.show();
         };
 
+        // Salvar/Atualizar Reserva
         const saveReservation = () => {
             const id = document.getElementById('reservationId').value;
-            const room = document.getElementById('reservationRoom').value;
+            const roomId = parseInt(document.getElementById('reservationRoom').value);
             const date = document.getElementById('reservationDate').value;
             const rate = parseFloat(document.getElementById('reservationRate').value);
             const status = document.getElementById('reservationStatus').value;
             
-            if (!room || !date || isNaN(rate)) return alert("Preencha todos os campos corretamente!");
-            
+            if (!roomId || !date || isNaN(rate)) return alert("Preencha todos os campos corretamente!");
+
+            // Verificar se o quarto está disponível
+            const room = rooms.find(r => r.id === roomId);
+            if (!room || room.status !== "Disponível") {
+                return alert("O quarto selecionado não está disponível.");
+            }
+
             if (id) {
                 const reservation = reservations.find(r => r.id == id);
-                reservation.room = room;
+                reservation.roomId = roomId;
                 reservation.date = date;
                 reservation.rate = rate;
                 reservation.status = status;
             } else {
-                reservations.push({ id: reservations.length + 1, room, date, rate, status });
+                reservations.push({ id: reservations.length + 1, roomId, date, rate, status });
+                // Atualizar o status do quarto para "Ocupado"
+                room.status = "Ocupado";
             }
-            
+
             renderReservations();
-            bootstrap.Modal.getInstance(document.getElementById('reservationModal')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
+            modal.hide();
         };
 
+        // Abrir Modal de Exclusão
+        const openDeleteReservationModal = (id) => {
+            reservationToDelete = id;  // Armazena o ID da reserva a ser excluída
+            const modal = new bootstrap.Modal(document.getElementById('deleteReservationModal'));
+            modal.show();
+        };
+
+        // Confirmar Exclusão
+        const confirmDeleteReservation = () => {
+            if (reservationToDelete !== null) {
+                const reservation = reservations.find(r => r.id === reservationToDelete);
+                const room = rooms.find(r => r.id === reservation.roomId);
+                if (room) {
+                    room.status = "Disponível";  // Liberar o quarto
+                }
+                // Filtra e remove a reserva do array
+                reservations = reservations.filter(r => r.id !== reservationToDelete);
+                renderReservations();  // Atualiza a tabela
+            }
+            // Fecha o modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteReservationModal'));
+            modal.hide();
+        };
+
+        // Associar o evento de exclusão ao botão
+        document.getElementById('confirmDeleteButton').addEventListener('click', confirmDeleteReservation);
+
+        // Inicializar a página
+        populateRoomOptions();
         renderReservations();
     </script>
 
