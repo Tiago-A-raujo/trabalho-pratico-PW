@@ -119,16 +119,8 @@
 
     <script>
         // Dados compartilhados entre as páginas (simulação)
-        let rooms = [
-            { id: 1, name: "Quarto Luxo", price: 200, status: "Disponível" },
-            { id: 2, name: "Quarto Standard", price: 150, status: "Disponível" }
-        ];
-
-        let reservations = [
-            { id: 1, roomId: 1, date: "2025-02-01", rate: 200, status: "Confirmada" },
-            { id: 2, roomId: 2, date: "2025-02-10", rate: 150, status: "Pendente" }
-        ];
-
+        let rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+        let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
         let reservationToDelete = null;  // Variável para armazenar o ID da reserva a ser excluída
 
         // Renderizar Reservas
@@ -151,6 +143,7 @@
                     </tr>
                 `;
             });
+            localStorage.setItem('reservations', JSON.stringify(reservations)); // Atualiza o localStorage
         };
 
         // Preencher a lista de quartos no modal
@@ -188,10 +181,14 @@
             
             if (!roomId || !date || isNaN(rate)) return alert("Preencha todos os campos corretamente!");
 
-            // Verificar se o quarto está disponível
+            // Verificar se o quarto está disponível na data
             const room = rooms.find(r => r.id === roomId);
-            if (!room || room.status !== "Disponível") {
-                return alert("O quarto selecionado não está disponível.");
+            const isRoomAvailable = reservations.every(reservation => 
+                reservation.roomId !== roomId || reservation.date !== date
+            );
+
+            if (!room || room.status !== "Disponível" || !isRoomAvailable) {
+                return alert("O quarto selecionado não está disponível na data escolhida.");
             }
 
             if (id) {
