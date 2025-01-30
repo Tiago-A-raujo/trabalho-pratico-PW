@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel 2025 - Gestão de Quartos</title>
+    <title>Hotel 2025 - Gestão de Quartos e Reservas</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/theme.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <header class="bg-primary text-white text-center py-4">
         <h1>Gestão do Hotel 2025</h1>
         <p class="lead">Sistema de gestão para rececionistas</p>
     </header>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="index.html">Hotel 2025</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -31,7 +29,7 @@
                         <a class="nav-link active" href="quartos.html">Quartos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="reservas.html">Reservas</a>
+                        <a class="nav-link" href="reservas.html">Reservas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="">Relatórios</a>
@@ -40,42 +38,117 @@
             </div>
         </div>
     </nav>
+
     <main class="container my-5">
-        <h2>Gestão de Quartos</h2>
-        <button class="btn btn-success mb-3" onclick="openModal()">Adicionar Quarto</button>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Preço</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="roomTable"></tbody>
-        </table>
+        <!-- Lista de Quartos -->
+        <section id="rooms" class="mb-5">
+            <h2>Gestão de Quartos</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">Adicionar Quarto</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="roomTable">
+                    <!-- Quartos dinâmicos -->
+                </tbody>
+            </table>
+        </section>
     </main>
 
-    <!-- Modal Adicionar/Editar -->
-    <div class="modal fade" id="roomModal">
+    <!-- Modal para Adicionar Quarto -->
+    <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Adicionar Quarto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="addRoomModalLabel">Adicionar Quarto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="roomId">
-                    <input type="text" id="roomName" class="form-control mb-2" placeholder="Nome do Quarto">
-                    <input type="number" id="roomPrice" class="form-control mb-2" placeholder="Preço">
-                    <select id="roomStatus" class="form-control">
-                        <option>Disponível</option>
-                        <option>Ocupado</option>
-                    </select>
+                    <form id="addRoomForm">
+                        <div class="mb-3">
+                            <label for="roomName" class="form-label">Nome do Quarto</label>
+                            <input type="text" class="form-control" id="roomName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="roomPrice" class="form-label">Preço</label>
+                            <input type="number" class="form-control" id="roomPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="roomStatus" class="form-label">Status</label>
+                            <select class="form-select" id="roomStatus" required>
+                                <option value="Disponível">Disponível</option>
+                                <option value="Ocupado">Ocupado</option>
+                                <option value="Manutenção">Manutenção</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" onclick="saveRoom()">Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveRoom()">Salvar Quarto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Quarto -->
+    <div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoomModalLabel">Editar Quarto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRoomForm">
+                        <input type="hidden" id="editRoomId">
+                        <div class="mb-3">
+                            <label for="editRoomName" class="form-label">Nome do Quarto</label>
+                            <input type="text" class="form-control" id="editRoomName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRoomPrice" class="form-label">Preço</label>
+                            <input type="number" class="form-control" id="editRoomPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRoomStatus" class="form-label">Status</label>
+                            <select class="form-select" id="editRoomStatus" required>
+                                <option value="Disponível">Disponível</option>
+                                <option value="Ocupado">Ocupado</option>
+                                <option value="Manutenção">Manutenção</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="updateRoom()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Excluir Quarto -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">Excluir Quarto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir este quarto?</p>
+                    <input type="hidden" id="deleteRoomId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteRoom()">Excluir</button>
                 </div>
             </div>
         </div>
@@ -87,6 +160,7 @@
             { id: 2, name: "Quarto Standard", price: 150, status: "Ocupado" }
         ];
 
+        // Renderizar Quartos
         const renderRooms = () => {
             const roomTable = document.getElementById('roomTable');
             roomTable.innerHTML = '';
@@ -98,63 +172,88 @@
                         <td>$${room.price}</td>
                         <td>${room.status}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="openModal(${room.id})">Editar</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteRoom(${room.id})">Excluir</button>
+                            <button class="btn btn-warning btn-sm" onclick="openEditRoomModal(${room.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteRoomModal(${room.id})">Excluir</button>
                         </td>
                     </tr>
                 `;
             });
         };
 
-        const openModal = (id = null) => {
-            const modal = new bootstrap.Modal(document.getElementById('roomModal'));
-            document.getElementById('modalTitle').innerText = id ? "Editar Quarto" : "Adicionar Quarto";
+        // Salvar Quarto (adicionar novo quarto)
+        const saveRoom = () => {
+            const roomName = document.getElementById('roomName').value;
+            const roomPrice = parseFloat(document.getElementById('roomPrice').value);
+            const roomStatus = document.getElementById('roomStatus').value;
 
-            if (id) {
-                const room = rooms.find(r => r.id === id);
-                document.getElementById('roomId').value = room.id;
-                document.getElementById('roomName').value = room.name;
-                document.getElementById('roomPrice').value = room.price;
-                document.getElementById('roomStatus').value = room.status;
+            if (roomName && roomPrice && roomStatus) {
+                const newRoom = {
+                    id: rooms.length + 1,
+                    name: roomName,
+                    price: roomPrice,
+                    status: roomStatus
+                };
+                rooms.push(newRoom);
+                renderRooms();
+                // Fechar o modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addRoomModal'));
+                modal.hide();
             } else {
-                document.getElementById('roomId').value = '';
-                document.getElementById('roomName').value = '';
-                document.getElementById('roomPrice').value = '';
-                document.getElementById('roomStatus').value = 'Disponível';
+                alert("Por favor, preencha todos os campos.");
             }
+        };
+
+        // Abrir Modal de Edição
+        const openEditRoomModal = (id) => {
+            const room = rooms.find(r => r.id === id);
+            if (room) {
+                document.getElementById('editRoomId').value = room.id;
+                document.getElementById('editRoomName').value = room.name;
+                document.getElementById('editRoomPrice').value = room.price;
+                document.getElementById('editRoomStatus').value = room.status;
+                const modal = new bootstrap.Modal(document.getElementById('editRoomModal'));
+                modal.show();
+            }
+        };
+
+        // Atualizar Quarto
+        const updateRoom = () => {
+            const roomId = parseInt(document.getElementById('editRoomId').value);
+            const roomName = document.getElementById('editRoomName').value;
+            const roomPrice = parseFloat(document.getElementById('editRoomPrice').value);
+            const roomStatus = document.getElementById('editRoomStatus').value;
+
+            const room = rooms.find(r => r.id === roomId);
+            if (room) {
+                room.name = roomName;
+                room.price = roomPrice;
+                room.status = roomStatus;
+                renderRooms();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editRoomModal'));
+                modal.hide();
+            }
+        };
+
+        // Abrir Modal de Exclusão
+        const openDeleteRoomModal = (id) => {
+            document.getElementById('deleteRoomId').value = id;
+            const modal = new bootstrap.Modal(document.getElementById('deleteRoomModal'));
             modal.show();
         };
 
-        const saveRoom = () => {
-            const id = document.getElementById('roomId').value;
-            const name = document.getElementById('roomName').value;
-            const price = parseFloat(document.getElementById('roomPrice').value);
-            const status = document.getElementById('roomStatus').value;
-
-            if (!name || isNaN(price)) return alert("Preencha todos os campos corretamente!");
-
-            if (id) {
-                const room = rooms.find(r => r.id == id);
-                room.name = name;
-                room.price = price;
-                room.status = status;
-            } else {
-                rooms.push({ id: rooms.length + 1, name, price, status });
-            }
-
+        // Confirmar Exclusão
+        const confirmDeleteRoom = () => {
+            const roomId = parseInt(document.getElementById('deleteRoomId').value);
+            rooms = rooms.filter(r => r.id !== roomId);
             renderRooms();
-            bootstrap.Modal.getInstance(document.getElementById('roomModal')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteRoomModal'));
+            modal.hide();
         };
 
-        const deleteRoom = (id) => {
-            rooms = rooms.filter(r => r.id !== id);
-            renderRooms();
-        };
-
+        // Inicializar a página
         renderRooms();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
