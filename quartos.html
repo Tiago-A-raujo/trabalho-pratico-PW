@@ -163,11 +163,7 @@
 
     <script>
         // Dados compartilhados via localStorage
-        let rooms = JSON.parse(localStorage.getItem('rooms')) || [
-            { id: 1, name: "Quarto Luxo", price: 200, status: "Disponível" },
-            { id: 2, name: "Quarto Standard", price: 150, status: "Disponível" }
-        ];
-
+        let rooms = JSON.parse(localStorage.getItem('rooms')) || [];
         let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
 
         // Renderizar Quartos com informações de reservas
