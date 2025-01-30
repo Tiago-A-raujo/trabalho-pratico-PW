@@ -1,19 +1,17 @@
-/* Tema Escuro Moderno */
+/* Estilos Gerais */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #1e1e1e;
-    color: #ffffff;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
 }
 
 /* Cabeçalho */
 header {
-    background: linear-gradient(135deg, #333, #222);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     text-align: center;
     padding: 50px 20px;
-    border-bottom: 3px solid #ffcc00;
 }
 
 header h1 {
@@ -23,21 +21,11 @@ header h1 {
 
 header p {
     font-size: 1.2rem;
-    color: #ffcc00;
 }
 
 /* Navbar */
 .navbar {
-    background-color: #292929;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.navbar a {
-    color: white !important;
-}
-
-.navbar a:hover {
-    color: #ffcc00 !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Seção Principal */
@@ -47,16 +35,16 @@ main {
 
 /* Cards */
 .card {
-    background-color: #2d2d2d;
-    border: 1px solid #444;
+    border: none;
     border-radius: 12px;
     transition: transform 0.3s, box-shadow 0.3s;
     overflow: hidden;
+    background-color: #ffffff;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0px 5px 15px rgba(255, 204, 0, 0.3);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card img {
@@ -70,17 +58,13 @@ main {
 .card h3 {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #ffcc00;
 }
 
 .card p {
-    color: #bbbbbb;
+    color: #6c757d;
 }
 
-/* Botões */
 .btn-outline-primary {
-    border: 2px solid #ffcc00;
-    color: #ffcc00;
     border-radius: 20px;
     padding: 10px 20px;
     font-size: 1rem;
@@ -88,8 +72,8 @@ main {
 }
 
 .btn-outline-primary:hover {
-    background-color: #ffcc00;
-    color: #1e1e1e;
+    background-color: #007bff;
+    color: white;
 }
 
 /* Responsividade */
