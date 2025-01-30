@@ -13,11 +13,11 @@
         <h1>Gestão de Reservas</h1>
         <p class="lead">Gerencie reservas, atualize tarifas e acompanhe o status</p>
     </header>
-
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="index.html">Hotel 2025</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -26,10 +26,10 @@
                         <a class="nav-link" href="index.html">Início</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="quartos.html">Quartos</a>
+                        <a class="nav-link " href="quartos.html">Quartos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="reservas.html">Reservas</a>
+                        <a class="nav-link active " href="reservas.html">Reservas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="">Relatórios</a>
@@ -38,40 +38,55 @@
             </div>
         </div>
     </nav>
-
-
     <main class="container my-5">
-        <section id="reservations" class="mb-5">
-            <h2>Gestão de Reservas</h2>
-            <button class="btn btn-success mb-3" onclick="addReservation()">Adicionar Reserva</button>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Quarto</th>
-                        <th>Data</th>
-                        <th>Tarifa</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="reservationTable">
-                    <!-- Reservas geradas dinamicamente aqui -->
-                </tbody>
-            </table>
-        </section>
+        <h2>Gestão de Reservas</h2>
+        <button class="btn btn-success mb-3" onclick="openModal()">Adicionar Reserva</button>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Quarto</th>
+                    <th>Data</th>
+                    <th>Tarifa</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="reservationTable"></tbody>
+        </table>
     </main>
 
-
+    <!-- Modal Adicionar/Editar -->
+    <div class="modal fade" id="reservationModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Adicionar Reserva</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="reservationId">
+                    <input type="text" id="reservationRoom" class="form-control mb-2" placeholder="Nome do Quarto">
+                    <input type="date" id="reservationDate" class="form-control mb-2">
+                    <input type="number" id="reservationRate" class="form-control mb-2" placeholder="Tarifa">
+                    <select id="reservationStatus" class="form-control">
+                        <option>Confirmada</option>
+                        <option>Pendente</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="saveReservation()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Simulação de dados
         let reservations = [
             { id: 1, room: "Quarto Luxo", date: "2025-02-01", rate: 200, status: "Confirmada" },
             { id: 2, room: "Quarto Standard", date: "2025-02-10", rate: 150, status: "Pendente" }
         ];
 
-        // Renderizar Reservas
         const renderReservations = () => {
             const reservationTable = document.getElementById('reservationTable');
             reservationTable.innerHTML = '';
@@ -84,7 +99,7 @@
                         <td>$${reservation.rate}</td>
                         <td>${reservation.status}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="editReservation(${reservation.id})">Editar</button>
+                            <button class="btn btn-warning btn-sm" onclick="openModal(${reservation.id})">Editar</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteReservation(${reservation.id})">Excluir</button>
                         </td>
                     </tr>
@@ -92,36 +107,50 @@
             });
         };
 
-        // Adicionar Reserva
-        const addReservation = () => {
-            const newReservation = {
-                id: reservations.length + 1,
-                room: prompt("Quarto:", "Novo Quarto") || "Novo Quarto",
-                date: prompt("Data (YYYY-MM-DD):", "2025-02-15") || "2025-02-15",
-                rate: parseFloat(prompt("Tarifa:", 100)) || 100,
-                status: "Confirmada"
-            };
-            reservations.push(newReservation);
-            renderReservations();
+        const openModal = (id = null) => {
+            const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+            document.getElementById('modalTitle').innerText = id ? "Editar Reserva" : "Adicionar Reserva";
+            
+            if (id) {
+                const reservation = reservations.find(r => r.id === id);
+                document.getElementById('reservationId').value = reservation.id;
+                document.getElementById('reservationRoom').value = reservation.room;
+                document.getElementById('reservationDate').value = reservation.date;
+                document.getElementById('reservationRate').value = reservation.rate;
+                document.getElementById('reservationStatus').value = reservation.status;
+            } else {
+                document.getElementById('reservationId').value = '';
+                document.getElementById('reservationRoom').value = '';
+                document.getElementById('reservationDate').value = '';
+                document.getElementById('reservationRate').value = '';
+                document.getElementById('reservationStatus').value = 'Confirmada';
+            }
+            modal.show();
         };
 
-        // Editar Reserva
-        const editReservation = (id) => {
-            const reservation = reservations.find(r => r.id === id);
-            reservation.room = prompt("Editar Quarto:", reservation.room) || reservation.room;
-            reservation.date = prompt("Editar Data (YYYY-MM-DD):", reservation.date) || reservation.date;
-            reservation.rate = parseFloat(prompt("Editar Tarifa:", reservation.rate)) || reservation.rate;
-            reservation.status = prompt("Editar Status:", reservation.status) || reservation.status;
+        const saveReservation = () => {
+            const id = document.getElementById('reservationId').value;
+            const room = document.getElementById('reservationRoom').value;
+            const date = document.getElementById('reservationDate').value;
+            const rate = parseFloat(document.getElementById('reservationRate').value);
+            const status = document.getElementById('reservationStatus').value;
+            
+            if (!room || !date || isNaN(rate)) return alert("Preencha todos os campos corretamente!");
+            
+            if (id) {
+                const reservation = reservations.find(r => r.id == id);
+                reservation.room = room;
+                reservation.date = date;
+                reservation.rate = rate;
+                reservation.status = status;
+            } else {
+                reservations.push({ id: reservations.length + 1, room, date, rate, status });
+            }
+            
             renderReservations();
+            bootstrap.Modal.getInstance(document.getElementById('reservationModal')).hide();
         };
 
-        // Excluir Reserva
-        const deleteReservation = (id) => {
-            reservations = reservations.filter(r => r.id !== id);
-            renderReservations();
-        };
-
-        // Inicializar a página
         renderReservations();
     </script>
 
