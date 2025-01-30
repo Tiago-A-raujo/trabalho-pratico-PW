@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel 2025 - Gestão de Quartos e Reservas</title>
+    <title>Hotel 2025 - Gestão de Quartos</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/theme.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +17,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="index.html">Hotel 2025</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -40,48 +41,54 @@
     </nav>
 
     <main class="container my-5">
-        <!-- Lista de Quartos -->
         <section id="rooms" class="mb-5">
             <h2>Gestão de Quartos</h2>
             <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">Adicionar Quarto</button>
-            <table class="table table-bordered">
-                <thead>
+            
+            <div class="alert alert-info">
+                <strong>Legenda de Status:</strong><br>
+                <span class="badge bg-success">Disponível</span> - Quarto livre para reserva<br>
+                <span class="badge bg-danger">Ocupado</span> - Quarto com reserva ativa<br>
+                <span class="badge bg-warning">Manutenção</span> - Quarto indisponível
+            </div>
+
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Preço</th>
                         <th>Status</th>
+                        <th>Reservas Ativas</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody id="roomTable">
-                    <!-- Quartos dinâmicos -->
-                </tbody>
+                <tbody id="roomTable"></tbody>
             </table>
         </section>
     </main>
 
-    <!-- Modal para Adicionar Quarto -->
+    <!-- Modal Adicionar Quarto -->
     <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addRoomModalLabel">Adicionar Quarto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="addRoomModalLabel">Adicionar Novo Quarto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addRoomForm">
                         <div class="mb-3">
-                            <label for="roomName" class="form-label">Nome do Quarto</label>
-                            <input type="text" class="form-control" id="roomName" required>
+                            <label for="addRoomName" class="form-label">Nome do Quarto</label>
+                            <input type="text" class="form-control" id="addRoomName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="roomPrice" class="form-label">Preço</label>
-                            <input type="number" class="form-control" id="roomPrice" required>
+                            <label for="addRoomPrice" class="form-label">Preço</label>
+                            <input type="number" class="form-control" id="addRoomPrice" required>
                         </div>
                         <div class="mb-3">
-                            <label for="roomStatus" class="form-label">Status</label>
-                            <select class="form-select" id="roomStatus" required>
+                            <label for="addRoomStatus" class="form-label">Status</label>
+                            <select class="form-control" id="addRoomStatus" required>
                                 <option value="Disponível">Disponível</option>
                                 <option value="Ocupado">Ocupado</option>
                                 <option value="Manutenção">Manutenção</option>
@@ -90,20 +97,20 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" onclick="saveRoom()">Salvar Quarto</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="addRoom()">Adicionar Quarto</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Editar Quarto -->
+    <!-- Modal Editar Quarto -->
     <div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editRoomModalLabel">Editar Quarto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editRoomForm">
@@ -118,7 +125,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editRoomStatus" class="form-label">Status</label>
-                            <select class="form-select" id="editRoomStatus" required>
+                            <select class="form-control" id="editRoomStatus" required>
                                 <option value="Disponível">Disponível</option>
                                 <option value="Ocupado">Ocupado</option>
                                 <option value="Manutenção">Manutenção</option>
@@ -127,50 +134,65 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="updateRoom()">Salvar Alterações</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Excluir Quarto -->
+    <!-- Modal Excluir Quarto -->
     <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteRoomModalLabel">Excluir Quarto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Tem certeza que deseja excluir este quarto?</p>
+                    <p>Tem certeza de que deseja excluir este quarto? Esta ação não pode ser desfeita.</p>
                     <input type="hidden" id="deleteRoomId">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" onclick="confirmDeleteRoom()">Excluir</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteRoom()">Excluir Quarto</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let rooms = [
+        // Dados compartilhados via localStorage
+        let rooms = JSON.parse(localStorage.getItem('rooms')) || [
             { id: 1, name: "Quarto Luxo", price: 200, status: "Disponível" },
-            { id: 2, name: "Quarto Standard", price: 150, status: "Ocupado" }
+            { id: 2, name: "Quarto Standard", price: 150, status: "Disponível" }
         ];
 
-        // Renderizar Quartos
+        let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+
+        // Renderizar Quartos com informações de reservas
         const renderRooms = () => {
             const roomTable = document.getElementById('roomTable');
             roomTable.innerHTML = '';
+            
             rooms.forEach(room => {
+                const activeReservations = reservations.filter(r => 
+                    r.roomId === room.id && r.status === "Confirmada"
+                ).length;
+
+                const statusClass = {
+                    "Disponível": "bg-success",
+                    "Ocupado": "bg-danger",
+                    "Manutenção": "bg-warning"
+                }[room.status];
+
                 roomTable.innerHTML += `
                     <tr>
                         <td>${room.id}</td>
                         <td>${room.name}</td>
                         <td>$${room.price}</td>
-                        <td>${room.status}</td>
+                        <td><span class="badge ${statusClass}">${room.status}</span></td>
+                        <td>${activeReservations} reserva(s)</td>
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="openEditRoomModal(${room.id})">Editar</button>
                             <button class="btn btn-danger btn-sm" onclick="openDeleteRoomModal(${room.id})">Excluir</button>
@@ -178,79 +200,78 @@
                     </tr>
                 `;
             });
+
+            localStorage.setItem('rooms', JSON.stringify(rooms));
         };
 
-        // Salvar Quarto (adicionar novo quarto)
-        const saveRoom = () => {
-            const roomName = document.getElementById('roomName').value;
-            const roomPrice = parseFloat(document.getElementById('roomPrice').value);
-            const roomStatus = document.getElementById('roomStatus').value;
+        // Função para adicionar quarto
+        const addRoom = () => {
+            const name = document.getElementById('addRoomName').value;
+            const price = parseFloat(document.getElementById('addRoomPrice').value);
+            const status = document.getElementById('addRoomStatus').value;
 
-            if (roomName && roomPrice && roomStatus) {
-                const newRoom = {
-                    id: rooms.length + 1,
-                    name: roomName,
-                    price: roomPrice,
-                    status: roomStatus
-                };
-                rooms.push(newRoom);
-                renderRooms();
-                // Fechar o modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('addRoomModal'));
-                modal.hide();
-            } else {
-                alert("Por favor, preencha todos os campos.");
-            }
+            const newRoomId = rooms.length ? Math.max(rooms.map(room => room.id)) + 1 : 1;
+
+            rooms.push({ id: newRoomId, name, price, status });
+
+            localStorage.setItem('rooms', JSON.stringify(rooms));
+            renderRooms();
+            bootstrap.Modal.getInstance(document.getElementById('addRoomModal')).hide();
         };
 
-        // Abrir Modal de Edição
-        const openEditRoomModal = (id) => {
-            const room = rooms.find(r => r.id === id);
-            if (room) {
-                document.getElementById('editRoomId').value = room.id;
-                document.getElementById('editRoomName').value = room.name;
-                document.getElementById('editRoomPrice').value = room.price;
-                document.getElementById('editRoomStatus').value = room.status;
-                const modal = new bootstrap.Modal(document.getElementById('editRoomModal'));
-                modal.show();
-            }
+        // Função para abrir o modal de edição
+        const openEditRoomModal = (roomId) => {
+            const room = rooms.find(r => r.id === roomId);
+            document.getElementById('editRoomId').value = room.id;
+            document.getElementById('editRoomName').value = room.name;
+            document.getElementById('editRoomPrice').value = room.price;
+            document.getElementById('editRoomStatus').value = room.status;
+            new bootstrap.Modal(document.getElementById('editRoomModal')).show();
         };
 
-        // Atualizar Quarto
+        // Função para editar quarto
         const updateRoom = () => {
             const roomId = parseInt(document.getElementById('editRoomId').value);
-            const roomName = document.getElementById('editRoomName').value;
-            const roomPrice = parseFloat(document.getElementById('editRoomPrice').value);
-            const roomStatus = document.getElementById('editRoomStatus').value;
+            const name = document.getElementById('editRoomName').value;
+            const price = parseFloat(document.getElementById('editRoomPrice').value);
+            const status = document.getElementById('editRoomStatus').value;
 
             const room = rooms.find(r => r.id === roomId);
-            if (room) {
-                room.name = roomName;
-                room.price = roomPrice;
-                room.status = roomStatus;
-                renderRooms();
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editRoomModal'));
-                modal.hide();
-            }
+            room.name = name;
+            room.price = price;
+            room.status = status;
+
+            localStorage.setItem('rooms', JSON.stringify(rooms));
+            renderRooms();
+            bootstrap.Modal.getInstance(document.getElementById('editRoomModal')).hide();
         };
 
-        // Abrir Modal de Exclusão
-        const openDeleteRoomModal = (id) => {
-            document.getElementById('deleteRoomId').value = id;
-            const modal = new bootstrap.Modal(document.getElementById('deleteRoomModal'));
-            modal.show();
+        // Função para abrir o modal de exclusão
+        const openDeleteRoomModal = (roomId) => {
+            document.getElementById('deleteRoomId').value = roomId;
+            new bootstrap.Modal(document.getElementById('deleteRoomModal')).show();
         };
 
-        // Confirmar Exclusão
+        // Função para excluir quarto
         const confirmDeleteRoom = () => {
             const roomId = parseInt(document.getElementById('deleteRoomId').value);
+
+            const hasActiveReservations = reservations.some(r => r.roomId === roomId && r.status === "Confirmada");
+            if (hasActiveReservations) {
+                alert("Não é possível excluir quarto com reservas ativas!");
+                return;
+            }
+
             rooms = rooms.filter(r => r.id !== roomId);
+            reservations = reservations.filter(r => r.roomId !== roomId);
+
+            localStorage.setItem('rooms', JSON.stringify(rooms));
+            localStorage.setItem('reservations', JSON.stringify(reservations));
             renderRooms();
-            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteRoomModal'));
-            modal.hide();
+            bootstrap.Modal.getInstance(document.getElementById('deleteRoomModal')).hide();
         };
 
-        // Inicializar a página
+        // Inicialização
         renderRooms();
     </script>
 
